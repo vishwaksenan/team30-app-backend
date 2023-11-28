@@ -24,6 +24,7 @@ router = routers.DefaultRouter()
 router.register(r'hosts', views.HostView, 'host')
 router.register(r'guests', views.GuestView, 'guest')
 router.register(r'hostavailabilities', views.HostAvailabilityView, 'hostavailability')
+router.register(r'hostavailabilities/(?P<date>\d{4}-\d{2}-\d{2})', views.HostAvailabilityByDateView, 'hostavailability')
 router.register(r'bookings', views.BookingView, 'booking')
 
 urlpatterns = [

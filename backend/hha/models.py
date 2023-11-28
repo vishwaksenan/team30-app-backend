@@ -10,16 +10,20 @@ class Guest(models.Model):
   first_name = models.CharField(max_length=150)
 
 class HostAvailability(models.Model):
-  host = models.OneToOneField(Host, on_delete=models.CASCADE)
+  host = models.ForeignKey(Host, on_delete=models.CASCADE)
   date = models.DateField(default=datetime.date.today)
 
   class Meta:
-    verbose_name_plural = "Host Availabilities"
+    verbose_name_plural = 'Host Availabilities'
+    unique_together = ('host', 'date')
 
 class Booking(models.Model):
-  host = models.OneToOneField(Host, on_delete=models.CASCADE)
-  guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
+  host = models.ForeignKey(Host, on_delete=models.CASCADE)
+  guest = models.ForeignKey(Guest, on_delete=models.CASCADE)
   date = models.DateField(default=datetime.date.today)
+
+  class Meta:
+     unique_together = (('host', 'guest', 'date'), ('guest', 'date'))
 
   def save(self, *args, **kwargs):
         availability = HostAvailability.objects.filter(host=self.host, date=self.date)
@@ -27,7 +31,4 @@ class Booking(models.Model):
             availability.delete()
             super().save(*args, **kwargs)
         else:
-            raise ValidationError("No availability found for the given host and date.")
-
-
-  
+            raise ValidationError('No availability found for the given host and date.')
