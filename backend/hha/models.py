@@ -1,5 +1,6 @@
 import datetime
 
+from django.core.exceptions import ValidationError
 from django.db import models
 
 class Host(models.Model):
@@ -19,5 +20,14 @@ class Booking(models.Model):
   host = models.OneToOneField(Host, on_delete=models.CASCADE)
   guest = models.OneToOneField(Guest, on_delete=models.CASCADE)
   date = models.DateField(default=datetime.date.today)
+
+  def save(self, *args, **kwargs):
+        availability = HostAvailability.objects.filter(host=self.host, date=self.date)
+        if availability.exists():
+            availability.delete()
+            super().save(*args, **kwargs)
+        else:
+            raise ValidationError("No availability found for the given host and date.")
+
 
   
